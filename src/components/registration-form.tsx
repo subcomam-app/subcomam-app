@@ -39,6 +39,7 @@ import {
 import { ControlPhoto, PhotoInput } from "./control-photo";
 import { ControlDocument } from "./control-document";
 import { CountryInput } from "./country-input";
+import { CommuneInput } from "./commune-input";
 import { normalizeCountry } from "@/lib/countries";
 import { photoFileName } from "@/lib/client-photo";
 import { ControlLocationInput } from "./control-location-input";
@@ -898,14 +899,10 @@ export function RegistrationForm({
                       />
                     </Field>
                     <Field label="Comuna" required>
-                      <input
-                        aria-label="Comuna"
-                        required
+                      <CommuneInput
                         value={personal.commune}
-                        maxLength={80}
-                        placeholder="Comuna de residencia"
-                        onChange={(e) =>
-                          setPersonal({ ...personal, commune: e.target.value })
+                        onChange={(commune) =>
+                          setPersonal({ ...personal, commune })
                         }
                       />
                     </Field>

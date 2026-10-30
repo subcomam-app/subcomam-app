@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { countrySchema } from "./countries";
+import { communeSchema } from "./communes";
 
 export const documentTypes = ["RUT", "DNI", "Pasaporte", "Otro"] as const;
 export type DocumentType = (typeof documentTypes)[number];
@@ -100,7 +101,7 @@ export const identitySchema = z
 
 export const contactSchema = z.object({
   address: z.string().trim().min(1, "Ingresa el domicilio.").max(250),
-  commune: z.string().trim().min(1, "Ingresa la comuna.").max(80),
+  commune: communeSchema,
   phone: z.string().trim().min(1, "Ingresa el teléfono de contacto.").max(30),
 });
 
