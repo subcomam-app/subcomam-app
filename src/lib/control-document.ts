@@ -91,6 +91,29 @@ export async function generateControlDocument(
     path.join(process.cwd(), "assets/templates/art12bis-v1.docx"),
   );
   const zip = new PizZip(template);
+  const pdiStamp = await readFile(
+    path.join(process.cwd(), "assets/templates/pdi-sello.png"),
+  );
+  zip.file("word/media/pdi-sello.png", pdiStamp);
+  zip.file(
+    "word/_rels/document.xml.rels",
+    zip
+      .file("word/_rels/document.xml.rels")!
+      .asText()
+      .replace(
+        "</Relationships>",
+        '<Relationship Id="rIdPdiReferenceStamp" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/pdi-sello.png"/></Relationships>',
+      ),
+  );
+  const contentTypes = zip.file("[Content_Types].xml")!.asText();
+  if (!/Extension="png"/.test(contentTypes))
+    zip.file(
+      "[Content_Types].xml",
+      contentTypes.replace(
+        "</Types>",
+        '<Default Extension="png" ContentType="image/png"/></Types>',
+      ),
+    );
   const consultationTemplate = await readFile(
     path.join(process.cwd(), "assets/templates/pdi-consulta-v1.xml"),
     "utf8",

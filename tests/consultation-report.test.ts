@@ -86,7 +86,7 @@ test("El Word comienza con consulta PDI, mantiene sus campos reservados vacíos 
   assert.match(text, /Persona de prueba/);
   assert.doesNotMatch(
     xml,
-    /NO_COPIAR|40254381474|JUAN CARLOS|IVÁN LISIECKI|INGRESO POR PASO NO HABILITADO/,
+    /NO_COPIAR|40254381474|JUAN CARLOS|INGRESO POR PASO NO HABILITADO/,
   );
   assert.ok(
     xml.indexOf("REPORTE DE CONSULTA") < xml.indexOf("CARABINEROS DE CHILE"),
@@ -142,6 +142,34 @@ test("Las opciones PDI son casillas interactivas de Word y conservan sus estados
   assert.doesNotMatch(xml.replace(/<w:sdt>[\s\S]*?<\/w:sdt>/g, ""), /[☐☒]/);
 });
 
+test("El bloque PDI incluye el sello detrás del nombre, grado y cargo editables del ejemplo", async () => {
+  const zip = new PizZip(await generateControlDocument(documentFixture));
+  const xml = zip.file("word/document.xml")!.asText();
+  const report = xml.slice(xml.indexOf("<w:body>"), xml.indexOf("</w:sectPr>"));
+  for (const text of [
+    "IVÁN LISIECKI SOTO",
+    "INSPECTOR",
+    "ENCARGADO DE GUARDIA",
+  ])
+    assert.ok(report.includes(`<w:t>${text}</w:t>`), text);
+  assert.match(report, /<wp:anchor[^>]+behindDoc="1"/);
+  assert.match(report, /<a:blip r:embed="rIdPdiReferenceStamp"/);
+  assert.match(report, /<a:alphaModFix amt="55000"/);
+  const stamp = zip.file("word/media/pdi-sello.png")!.asNodeBuffer();
+  assert.deepEqual(
+    [...stamp.subarray(0, 8)],
+    [137, 80, 78, 71, 13, 10, 26, 10],
+  );
+  assert.match(
+    zip.file("word/_rels/document.xml.rels")!.asText(),
+    /Id="rIdPdiReferenceStamp"[^>]+Target="media\/pdi-sello.png"/,
+  );
+  assert.match(
+    zip.file("[Content_Types].xml")!.asText(),
+    /Extension="png" ContentType="image\/png"/,
+  );
+});
+
 test("Las observaciones extensas se conservan completas en un anexo identificado", async () => {
   const notes = "Observación íntegra sin recortar. ".repeat(55);
   const control = { ...documentFixture, notes };
@@ -192,10 +220,7 @@ test("El formato PDI mantiene sus campos y remite los datos largos al anexo sin 
   const text = report.replace(/<[^>]*>/g, "");
   assert.match(text, /12° BIS, LEY N° 20.930/);
   assert.match(text, /Distribución:- SUB\. ASUNTOS MIGRATORIOS/);
-  assert.doesNotMatch(
-    text,
-    /FUNCIONARIO PDI|IVÁN|INSPECTOR|ILS|NO REGISTRA|NO HAY/,
-  );
+  assert.doesNotMatch(text, /FUNCIONARIO PDI|ILS|NO REGISTRA|NO HAY/);
   assert.match(report, /<w:caps\s*\/>/);
   const legacy = await consultationReportLayout(documentFixture);
   assert.equal(legacy.fields.SURNAME_LABEL, "APELLIDO PATERNO");

@@ -136,6 +136,17 @@ test("El Word escapa datos y conserva intactas imágenes, estilos y relaciones",
   assert.ok(xml.includes("Persona de prueba Validación temporal"));
   assert.ok(xml.includes("17 / 10 / 2026"));
   for (const [name, entry] of Object.entries(template.files)) {
+    if (name === "word/_rels/document.xml.rels") {
+      assert.equal(
+        generated
+          .file(name)!
+          .asText()
+          .replace(/<Relationship Id="rIdPdiReferenceStamp"[^>]*\/>/, ""),
+        entry.asText(),
+        "Se agrega el sello PDI sin alterar las relaciones originales",
+      );
+      continue;
+    }
     if (name !== "word/document.xml" && !entry.dir)
       assert.deepEqual(
         generated.file(name)!.asUint8Array(),

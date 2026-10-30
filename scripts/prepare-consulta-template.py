@@ -1,7 +1,7 @@
 """Editable PDI form positioned against the user's photographed sheet.
 
-The photo controls layout and fixed wording. Filled sample values, officer
-initials, signature and stamp are not part of the blank template.
+The photo controls layout and fixed wording. The user requested the sample
+PDI officer block and background stamp; the handwritten signature is excluded.
 Run with the Codex bundled Python runtime (python-docx).
 """
 from copy import deepcopy
@@ -68,6 +68,39 @@ def checkbox(p, tag, title, checked=False):
     content.append(r._r)
     sdt.append(content)
     p._p.append(sdt)
+
+def background_stamp(p):
+    """Floating image behind editable officer text, without changing pagination.
+
+    The application attaches the referenced PNG to the final DOCX package.
+    All positions are in page coordinates, converted from points to EMU.
+    """
+    from PIL import Image
+    with Image.open(ROOT / 'assets/templates/pdi-sello.png') as stamp:
+        width, height = 124, 124 * stamp.height / stamp.width
+    emu = lambda pt: str(round(pt * 12700))
+    drawing = etree.fromstring(f'''<w:drawing xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+      xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+      xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+      xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"
+      xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+      <wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="0" behindDoc="1" locked="0" layoutInCell="1" allowOverlap="1">
+        <wp:simplePos x="0" y="0"/>
+        <wp:positionH relativeFrom="page"><wp:posOffset>{emu(370)}</wp:posOffset></wp:positionH>
+        <wp:positionV relativeFrom="page"><wp:posOffset>{emu(650)}</wp:posOffset></wp:positionV>
+        <wp:extent cx="{emu(width)}" cy="{emu(height)}"/>
+        <wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/>
+        <wp:docPr id="903" name="Sello PDI de referencia" descr="Sello de fondo del bloque PDI"/>
+        <wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>
+        <a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+          <pic:pic><pic:nvPicPr><pic:cNvPr id="903" name="pdi-sello.png"/><pic:cNvPicPr/></pic:nvPicPr>
+            <pic:blipFill><a:blip r:embed="rIdPdiReferenceStamp"><a:alphaModFix amt="55000"/></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill>
+            <pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{emu(width)}" cy="{emu(height)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>
+          </pic:pic>
+        </a:graphicData></a:graphic>
+      </wp:anchor>
+    </w:drawing>''')
+    p.add_run()._r.append(drawing)
 
 def paragraph(top, text='', *, x=BODY, right=RIGHT, bold=False, underline=False,
               size=11, center=False, height=LINE, caps=False):
@@ -191,7 +224,11 @@ p.paragraph_format.tab_stops.add_tab_stop(Pt(322))
 run(p, 'correo\t, con el propósito de poner estos', size=10.5)
 paragraph(625.5, 'antecedentes en conocimiento de la Autoridad Administrativa.', right=580, size=10.5)
 
-# Keep the signature, stamp and source officer initials area empty.
+# User-requested sample text remains editable; stamp is a separate background.
+p = paragraph(682, 'IVÁN LISIECKI SOTO', x=390, right=580, center=True)
+background_stamp(p)
+paragraph(695.25, 'INSPECTOR', x=390, right=580, center=True)
+paragraph(708.5, 'ENCARGADO DE GUARDIA', x=390, right=580, center=True)
 paragraph(768, 'Distribución:', underline=True)
 p = paragraph(781.25, '- SUB. ASUNTOS MIGRATORIOS')
 p.paragraph_format.tab_stops.add_tab_stop(Pt(258))

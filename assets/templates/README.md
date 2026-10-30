@@ -46,7 +46,7 @@ negritas y subrayados y ubicación del bloque de distribución. El tamaño es
 612 × 936 pt, Arial 11 y separación de líneas de 13,25 pt. Los campos se presentan
 en mayúsculas y la fecha del reporte como DD.MMM.AA. Las posiciones se reconstruyen
 desde la fotografía; no existe un original DOCX de PDI para cotejar sus medidas.
-No incorpora datos personales, iniciales del funcionario, firma, timbre ni
+No incorpora los datos personales del controlado, iniciales manuscritas, firma ni
 resultados migratorios del ejemplo. Por la petición de conservar el texto fijo
 de la referencia, esta hoja reproduce «12° BIS, LEY N° 20.930» tal como aparece
 en la foto; el acta de Carabineros conserva su propio texto sin cambios.
@@ -67,6 +67,18 @@ Las opciones de porte de documento y situación migratoria se entregan desmarcad
 solo el tipo de consulta 12 bis viene marcado. Se especifica Segoe UI Symbol tanto
 en el contenido como en los estados marcado/desmarcado para evitar sustituciones
 de símbolos al abrir el archivo. Las casillas se editan en la copia Word descargada.
+
+Por petición posterior del usuario, el bloque inferior PDI incorpora el sello de
+fondo y los textos de ejemplo IVÁN LISIECKI SOTO, INSPECTOR y ENCARGADO DE GUARDIA.
+Esos tres textos son editables en Word y no se obtienen de la cuenta del funcionario
+de Carabineros ni cambian el snapshot del control. El sello se ancla detrás del texto
+con 55 % de opacidad y conserva sus proporciones; no altera la paginación.
+`pdi-sello.png` es una reproducción visual de referencia preparada con la herramienta
+de edición de imágenes a partir del recorte adjunto por el usuario el 30-10-2026.
+Instrucción de edición: aislar el sello morado, retirar papel, texto superpuesto y
+trazos manuscritos, conservar el diseño y usar fondo transparente. No se inserta
+la firma manuscrita del ejemplo. La imagen se incluye como recurso interno del Word;
+el PDF de la Subcomisaría mantiene su plantilla propia.
 
 El Word habitual contiene reporte, acta y fotografías (tres páginas). Los valores
 que exceden el ancho de una línea se conservan completos en un anexo PDI-1;
