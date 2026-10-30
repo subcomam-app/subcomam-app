@@ -219,8 +219,11 @@ test("El formato PDI mantiene sus campos y remite los datos largos al anexo sin 
   const report = xml.slice(xml.indexOf("<w:body>"), xml.indexOf("</w:sectPr>"));
   const text = report.replace(/<[^>]*>/g, "");
   assert.match(text, /12° BIS, LEY N° 20.930/);
-  assert.match(text, /Distribución:- SUB\. ASUNTOS MIGRATORIOS/);
-  assert.doesNotMatch(text, /FUNCIONARIO PDI|ILS|NO REGISTRA|NO HAY/);
+  assert.match(
+    xml.replace(/<[^>]*>/g, ""),
+    /ILSDistribución:- SUB\. ASUNTOS MIGRATORIOS\(1\)- Archivo\(1\) \//,
+  );
+  assert.doesNotMatch(text, /FUNCIONARIO PDI|NO REGISTRA|NO HAY/);
   assert.match(report, /<w:caps\s*\/>/);
   const legacy = await consultationReportLayout(documentFixture);
   assert.equal(legacy.fields.SURNAME_LABEL, "APELLIDO PATERNO");

@@ -80,6 +80,11 @@ trazos manuscritos, conservar el diseño y usar fondo transparente. No se insert
 la firma manuscrita del ejemplo. La imagen se incluye como recurso interno del Word;
 el PDF de la Subcomisaría mantiene su plantilla propia.
 
+El bloque final reproduce el último recorte solicitado: ILS, Distribución:
+subrayado, - SUB. ASUNTOS MIGRATORIOS (1) y - Archivo (1) /.
+Ambas cantidades usan la misma tabulación; la línea completa de Archivo va
+subrayada, incluida la tabulación. ILS queda como texto editable del ejemplo.
+
 El Word habitual contiene reporte, acta y fotografías (tres páginas). Los valores
 que exceden el ancho de una línea se conservan completos en un anexo PDI-1;
 se miden en mayúsculas para que ningún valor cambie la distribución del formulario.
