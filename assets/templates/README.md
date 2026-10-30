@@ -69,7 +69,7 @@ en el contenido como en los estados marcado/desmarcado para evitar sustituciones
 de símbolos al abrir el archivo. Las casillas se editan en la copia Word descargada.
 
 Por petición posterior del usuario, el bloque inferior PDI incorpora el sello de
-fondo y los textos de ejemplo IVÁN LISIECKI SOTO, INSPECTOR y ENCARGADO DE GUARDIA.
+fondo y los textos editables NOMBRE FUNCIONARIO PDI, INSPECTOR y ENCARGADO DE GUARDIA.
 Esos tres textos son editables en Word y no se obtienen de la cuenta del funcionario
 de Carabineros ni cambian el snapshot del control. El sello se ancla detrás del texto
 con 55 % de opacidad y conserva sus proporciones; no altera la paginación.

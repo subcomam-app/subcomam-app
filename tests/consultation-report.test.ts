@@ -147,7 +147,7 @@ test("El bloque PDI incluye el sello detrás del nombre, grado y cargo editables
   const xml = zip.file("word/document.xml")!.asText();
   const report = xml.slice(xml.indexOf("<w:body>"), xml.indexOf("</w:sectPr>"));
   for (const text of [
-    "IVÁN LISIECKI SOTO",
+    "NOMBRE FUNCIONARIO PDI",
     "INSPECTOR",
     "ENCARGADO DE GUARDIA",
   ])
@@ -223,7 +223,7 @@ test("El formato PDI mantiene sus campos y remite los datos largos al anexo sin 
     xml.replace(/<[^>]*>/g, ""),
     /ILSDistribución:- SUB\. ASUNTOS MIGRATORIOS\(1\)- Archivo\(1\) \//,
   );
-  assert.doesNotMatch(text, /FUNCIONARIO PDI|NO REGISTRA|NO HAY/);
+  assert.doesNotMatch(text, /IVÁN LISIECKI SOTO|NO REGISTRA|NO HAY/);
   assert.match(report, /<w:caps\s*\/>/);
   const legacy = await consultationReportLayout(documentFixture);
   assert.equal(legacy.fields.SURNAME_LABEL, "APELLIDO PATERNO");

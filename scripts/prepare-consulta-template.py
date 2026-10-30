@@ -225,7 +225,7 @@ run(p, 'correo\t, con el propósito de poner estos', size=10.5)
 paragraph(625.5, 'antecedentes en conocimiento de la Autoridad Administrativa.', right=580, size=10.5)
 
 # User-requested sample text remains editable; stamp is a separate background.
-p = paragraph(682, 'IVÁN LISIECKI SOTO', x=390, right=580, center=True)
+p = paragraph(682, 'NOMBRE FUNCIONARIO PDI', x=390, right=580, center=True)
 background_stamp(p)
 paragraph(695.25, 'INSPECTOR', x=390, right=580, center=True)
 paragraph(708.5, 'ENCARGADO DE GUARDIA', x=390, right=580, center=True)
