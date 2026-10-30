@@ -97,6 +97,51 @@ test("El Word comienza con consulta PDI, mantiene sus campos reservados vacíos 
   assert.doesNotMatch(xml, /\{\{[A-Z_]+\}\}/);
 });
 
+test("Las opciones PDI son casillas interactivas de Word y conservan sus estados iniciales", async () => {
+  const zip = new PizZip(await generateControlDocument(documentFixture));
+  const xml = zip.file("word/document.xml")!.asText();
+  const controls = [...xml.matchAll(/<w:sdt>([\s\S]*?)<\/w:sdt>/g)].map(
+    (match) => match[1],
+  );
+  const expected = new Map([
+    ["pdi_consulta_12bis", "1"],
+    ["pdi_consulta_detencion", "0"],
+    ["pdi_porta_documento_si", "0"],
+    ["pdi_porta_documento_no", "0"],
+    ["pdi_situacion_regular", "0"],
+    ["pdi_situacion_irregular", "0"],
+  ]);
+  assert.equal(controls.length, expected.size);
+  const ids = new Set<string>();
+  for (const control of controls) {
+    const tag = control.match(/<w:tag w:val="([^"]+)"/)![1];
+    const state = control.match(/<w14:checked w14:val="([01])"/)![1];
+    assert.equal(state, expected.get(tag), tag);
+    expected.delete(tag);
+    ids.add(control.match(/<w:id w:val="([^"]+)"/)![1]);
+    assert.match(control, /<w14:checkbox>/);
+    assert.match(
+      control,
+      /<w14:checkedState w14:val="2612" w14:font="Segoe UI Symbol"/,
+    );
+    assert.match(
+      control,
+      /<w14:uncheckedState w14:val="2610" w14:font="Segoe UI Symbol"/,
+    );
+    for (const script of ["ascii", "hAnsi", "eastAsia", "cs"])
+      assert.ok(control.includes(`w:${script}="Segoe UI Symbol"`));
+    assert.match(control, state === "1" ? /<w:t>☒<\/w:t>/ : /<w:t>☐<\/w:t>/);
+    assert.doesNotMatch(control, /<w:lock|<w:temporary/);
+  }
+  assert.equal(ids.size, 6);
+  assert.equal(expected.size, 0);
+  assert.doesNotMatch(
+    zip.file("word/settings.xml")!.asText(),
+    /<w:documentProtection/,
+  );
+  assert.doesNotMatch(xml.replace(/<w:sdt>[\s\S]*?<\/w:sdt>/g, ""), /[☐☒]/);
+});
+
 test("Las observaciones extensas se conservan completas en un anexo identificado", async () => {
   const notes = "Observación íntegra sin recortar. ".repeat(55);
   const control = { ...documentFixture, notes };

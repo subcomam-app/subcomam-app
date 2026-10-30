@@ -61,6 +61,13 @@ de la plantilla y se remite a los apellidos registrados en un anexo identificado
 sin adivinar cómo separarlos. El sexo no registrado queda vacío.
 Los datos de un control anterior no se completan a partir de una ficha editada después.
 
+Las seis opciones del reporte son controles de contenido de casilla de Word
+(`w14:checkbox`), marcables con un clic, sin macros ni protección de formulario.
+Las opciones de porte de documento y situación migratoria se entregan desmarcadas;
+solo el tipo de consulta 12 bis viene marcado. Se especifica Segoe UI Symbol tanto
+en el contenido como en los estados marcado/desmarcado para evitar sustituciones
+de símbolos al abrir el archivo. Las casillas se editan en la copia Word descargada.
+
 El Word habitual contiene reporte, acta y fotografías (tres páginas). Los valores
 que exceden el ancho de una línea se conservan completos en un anexo PDI-1;
 se miden en mayúsculas para que ningún valor cambie la distribución del formulario.

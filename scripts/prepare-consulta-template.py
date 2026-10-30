@@ -26,12 +26,48 @@ style.font.name, style.font.size = 'Arial', Pt(11)
 style.paragraph_format.space_after = Pt(0)
 LINE, BODY, RIGHT = 13.25, 143, 567
 y = 28
+checkbox_id = 960000
 
 def run(p, text, bold=False, underline=False, italic=False, size=11, caps=False):
     r = p.add_run(text)
     r.bold, r.underline, r.italic = bold, underline, italic
     r.font.name, r.font.size, r.font.all_caps = 'Arial', Pt(size), caps
     return r
+
+def checkbox(p, tag, title, checked=False):
+    """Native Word checkbox: clickable without macros or form protection.
+
+    Set the symbol font explicitly for every script; inheriting Arial from the
+    acta can render these Unicode boxes as unrelated fallback glyphs in Word.
+    """
+    global checkbox_id
+    checkbox_id += 1
+    sdt = OxmlElement('w:sdt')
+    props = OxmlElement('w:sdtPr')
+    for name, value in [('alias', title), ('tag', tag), ('id', str(checkbox_id))]:
+        element = OxmlElement('w:' + name)
+        element.set(qn('w:val'), value)
+        props.append(element)
+    control = OxmlElement('w14:checkbox')
+    state = OxmlElement('w14:checked')
+    state.set(qn('w14:val'), '1' if checked else '0')
+    control.append(state)
+    for name, value in [('checkedState', '2612'), ('uncheckedState', '2610')]:
+        symbol = OxmlElement('w14:' + name)
+        symbol.set(qn('w14:val'), value)
+        symbol.set(qn('w14:font'), 'Segoe UI Symbol')
+        control.append(symbol)
+    props.append(control)
+    sdt.append(props)
+    content = OxmlElement('w:sdtContent')
+    r = run(p, '☒' if checked else '☐')
+    fonts = r._r.get_or_add_rPr().rFonts
+    for script in ['ascii', 'hAnsi', 'eastAsia', 'cs']:
+        fonts.set(qn('w:' + script), 'Segoe UI Symbol')
+    fonts.set(qn('w:hint'), 'default')
+    content.append(r._r)
+    sdt.append(content)
+    p._p.append(sdt)
 
 def paragraph(top, text='', *, x=BODY, right=RIGHT, bold=False, underline=False,
               size=11, center=False, height=LINE, caps=False):
@@ -92,13 +128,15 @@ paragraph(82, 'REPORTE DE CONSULTA DE EXTRANJERO N° __________ /', center=True,
 paragraph(109, 'TIPO DE CONSULTA:', bold=True, underline=True)
 p = paragraph(122.25)
 p.paragraph_format.tab_stops.add_tab_stop(Pt(254))
-run(p, '12° BIS, LEY N° 20.930\t☒')
+run(p, '12° BIS, LEY N° 20.930\t')
+checkbox(p, 'pdi_consulta_12bis', 'Consulta por artículo 12 bis', checked=True)
 p = paragraph(135.5)
 p.paragraph_format.tab_stops.add_tab_stop(Pt(254))
-run(p, 'POR DETENCIÓN\t☐')
+run(p, 'POR DETENCIÓN\t')
+checkbox(p, 'pdi_consulta_detencion', 'Consulta por detención')
 paragraph(162, 'ANTECEDENTES PERSONALES', bold=True, underline=True)
-table(188.5, [
-    ['PORTA DOC. DE IDENTIDAD', ': SI ☐   NO ☐'],
+personal_table = table(188.5, [
+    ['PORTA DOC. DE IDENTIDAD', ''],
     ['{{SURNAME_LABEL}}', ': {{PATERNAL_SURNAME}}'],
     ['APELLIDO MATERNO', ': {{MATERNAL_SURNAME}}'],
     ['NOMBRES', ': {{FIRST_NAMES}}'],
@@ -108,6 +146,11 @@ table(188.5, [
     ['FECHA DE NAC.', ': {{BIRTH_DATE}}'],
     ['SEXO', ': {{SEX}}'],
 ], [170,254], value_caps=True)
+p = personal_table.cell(0, 1).paragraphs[0]
+run(p, ': SI ')
+checkbox(p, 'pdi_porta_documento_si', 'Porta documento de identidad: sí')
+run(p, '   NO ')
+checkbox(p, 'pdi_porta_documento_no', 'Porta documento de identidad: no')
 
 p = paragraph(323, right=580)
 p.paragraph_format.tab_stops.add_tab_stop(Pt(179))
@@ -124,8 +167,8 @@ run(p, 'datos consignados son ', italic=True, size=10.5)
 run(p, 'DECLARATIVOS.', bold=True, italic=True, underline=True, size=10.5)
 paragraph(376, 'ANTECEDENTES MIGRATORIOS', bold=True, underline=True)
 table(400, [['MOVIMIENTO','FECHA','AVANZADA'],['','','']], [98,96,230], border=True, row_height=19)
-table(451.25, [
-    ['SITUACIÓN MIGRATORIA', ': REGULAR ☐        IRREGULAR ☐'],
+migration_table = table(451.25, [
+    ['SITUACIÓN MIGRATORIA', ''],
     ['MOTIVO', ':'],
     ['REGISTRA DENUNCIA', ':'],
     ['CORRESPONDE DENUNCIA', ':'],
@@ -136,6 +179,11 @@ table(451.25, [
     ['FECHA', ': {{CONTROL_DATE}}'],
     ['OBSERVACIONES', ': {{NOTES}}'],
 ], [170,254], value_caps=True)
+p = migration_table.cell(0, 1).paragraphs[0]
+run(p, ': REGULAR ')
+checkbox(p, 'pdi_situacion_regular', 'Situación migratoria: regular')
+run(p, '        IRREGULAR ')
+checkbox(p, 'pdi_situacion_irregular', 'Situación migratoria: irregular')
 
 paragraph(599, 'Se solicita que, en caso de producirse una detención, se remita copia del Parte Policial al', right=580, size=10.5)
 p = paragraph(612.25, right=580)
