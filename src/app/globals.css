@@ -1484,6 +1484,38 @@ td small {
   color: var(--text);
   margin-bottom: 20px;
 }
+.camera-view {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #14261b;
+}
+.camera-view video {
+  display: block;
+  width: 100%;
+  max-height: 55dvh;
+  object-fit: contain;
+}
+.camera-loading {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+.camera-hint {
+  margin: 12px 0;
+}
+.camera-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
 .help-content {
   font-size: 14px;
   line-height: 1.7;

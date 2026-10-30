@@ -11,6 +11,7 @@ import {
 import type { Control } from "@/lib/domain";
 import { prepareControlPhoto } from "@/lib/client-photo";
 import type { PhotoKind } from "@/lib/photo-policy";
+import { CameraCapture } from "./camera-capture";
 
 function photoSize(bytes: number) {
   return bytes >= 1024 * 1024
@@ -42,7 +43,7 @@ export function PhotoInput({
   const [busy, setBusy] = useState(false);
   const [originalBytes, setOriginalBytes] = useState(0);
   const version = useRef(0);
-  const camera = useRef<HTMLInputElement>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const url = photo ? URL.createObjectURL(photo) : "";
@@ -57,10 +58,7 @@ export function PhotoInput({
     },
     [],
   );
-  async function choose(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
+  async function prepare(file: File) {
     const current = ++version.current;
     setBusy(true);
     onPreparing(true);
@@ -82,6 +80,11 @@ export function PhotoInput({
         onPreparing(false);
       }
     }
+  }
+  function choose(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) void prepare(file);
   }
   return (
     <section className="photo-input" aria-labelledby={headingId}>
@@ -131,20 +134,6 @@ export function PhotoInput({
         <div className="photo-input-actions">
           <input
             className="sr-only"
-            ref={camera}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            capture="environment"
-            aria-label={
-              isDocument
-                ? "Tomar fotografía del documento"
-                : "Tomar fotografía de la persona"
-            }
-            disabled={disabled || busy}
-            onChange={choose}
-          />
-          <input
-            className="sr-only"
             ref={picker}
             type="file"
             accept="image/jpeg,image/png,image/webp"
@@ -160,7 +149,11 @@ export function PhotoInput({
             type="button"
             className="button primary"
             disabled={disabled || busy}
-            onClick={() => camera.current?.click()}
+            onClick={() => {
+              setError("");
+              setCameraOpen(true);
+              onPreparing(true);
+            }}
           >
             <Camera size={17} />{" "}
             {isDocument ? "Fotografiar documento" : "Tomar foto"}
@@ -227,6 +220,19 @@ export function PhotoInput({
               : "Confirmo que la foto corresponde a esta persona y fue tomada durante este control."}
           </span>
         </label>
+      )}
+      {cameraOpen && (
+        <CameraCapture
+          kind={kind}
+          onClose={() => {
+            setCameraOpen(false);
+            onPreparing(false);
+          }}
+          onCapture={(file) => {
+            setCameraOpen(false);
+            void prepare(file);
+          }}
+        />
       )}
     </section>
   );
