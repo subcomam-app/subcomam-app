@@ -1,0 +1,11 @@
+.vercel
+.env*.local
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+supabase/.temp/
+test-results/
+.env
+output/
+tmp/

@@ -1,0 +1,46 @@
+{
+  "name": "subcomam-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "test:integration": "node --env-file=.env.local --import tsx tests/integration.ts",
+    "test:admin": "node --env-file=.env.local --import tsx tests/admin-integration.ts",
+    "test:photos": "node --env-file=.env.local --import tsx tests/photo-integration.ts",
+    "test:access": "node --env-file=.env.local --import tsx tests/temporary-access.ts",
+    "test:documents": "node --env-file=.env.local --import tsx tests/document-integration.ts",
+    "test:account": "node --env-file=.env.local --import tsx tests/account-integration.ts",
+    "test:officers": "node --env-file=.env.local --import tsx tests/officer-integration.ts",
+    "test:location": "node --env-file=.env.local --import tsx tests/location-integration.ts",
+    "test:statistics": "node --env-file=.env.local --import tsx tests/statistics-integration.ts",
+    "test:control-interval": "node --env-file=.env.local --import tsx tests/control-interval-integration.ts"
+  },
+  "dependencies": {
+    "@pdf-lib/fontkit": "1.1.1",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
+    "i18n-iso-countries": "7.14.0",
+    "lucide-react": "1.59.0",
+    "next": "16.4.2",
+    "pdf-lib": "1.17.1",
+    "pizzip": "3.2.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "^0.0.1",
+    "sharp": "0.35.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "prettier": "^3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
