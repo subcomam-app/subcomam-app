@@ -785,6 +785,12 @@ summary {
   margin: 1px 0 0;
   accent-color: var(--green);
 }
+.optional-document-photo {
+  padding-bottom: 20px;
+}
+.optional-document-photo > .field-hint {
+  margin-top: 8px;
+}
 .control-photo {
   text-align: center;
   margin: 24px 0 0;

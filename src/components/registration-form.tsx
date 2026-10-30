@@ -125,6 +125,7 @@ export function RegistrationForm({
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [photoConfirmed, setPhotoConfirmed] = useState(false);
   const [preparingPhoto, setPreparingPhoto] = useState(false);
+  const [includeDocumentPhoto, setIncludeDocumentPhoto] = useState(false);
   const [documentPhoto, setDocumentPhoto] = useState<Blob | null>(null);
   const [documentConfirmed, setDocumentConfirmed] = useState(false);
   const [preparingDocument, setPreparingDocument] = useState(false);
@@ -216,6 +217,7 @@ export function RegistrationForm({
       art12bis: { lesions: "", presented_document: "" },
     }));
     setPhoto(null);
+    setIncludeDocumentPhoto(false);
     setDocumentPhoto(null);
     setDocumentConfirmed(false);
     setPreparingDocument(false);
@@ -240,6 +242,7 @@ export function RegistrationForm({
       art12bis: { lesions: "", presented_document: "" },
     }));
     setPhoto(null);
+    setIncludeDocumentPhoto(false);
     setDocumentPhoto(null);
     setDocumentConfirmed(false);
     setPreparingDocument(false);
@@ -353,7 +356,8 @@ export function RegistrationForm({
       );
       return;
     }
-    if (documentPhoto && !documentConfirmed) {
+    const attachedDocumentPhoto = includeDocumentPhoto ? documentPhoto : null;
+    if (attachedDocumentPhoto && !documentConfirmed) {
       setError(
         "Confirma que la imagen del documento adjunta se lee claramente.",
       );
@@ -380,11 +384,11 @@ export function RegistrationForm({
       );
       form.set("photo", photo, photoFileName(photo));
       form.set("photo_confirmed", "true");
-      if (documentPhoto) {
+      if (attachedDocumentPhoto) {
         form.set(
           "document_photo",
-          documentPhoto,
-          `documento-${photoFileName(documentPhoto)}`,
+          attachedDocumentPhoto,
+          `documento-${photoFileName(attachedDocumentPhoto)}`,
         );
         form.set("document_photo_confirmed", "true");
       }
@@ -410,6 +414,7 @@ export function RegistrationForm({
   }
   function reset() {
     setPhoto(null);
+    setIncludeDocumentPhoto(false);
     setDocumentPhoto(null);
     setDocumentConfirmed(false);
     setPreparingDocument(false);
@@ -977,15 +982,38 @@ export function RegistrationForm({
                   onPreparing={setPreparingPhoto}
                   disabled={saving}
                 />
-                <PhotoInput
-                  kind="document"
-                  photo={documentPhoto}
-                  onChange={setDocumentPhoto}
-                  confirmed={documentConfirmed}
-                  onConfirm={setDocumentConfirmed}
-                  onPreparing={setPreparingDocument}
-                  disabled={saving}
-                />
+                <div className="optional-document-photo">
+                  <label className="photo-confirm">
+                    <input
+                      type="checkbox"
+                      checked={includeDocumentPhoto}
+                      onChange={(event) => {
+                        setIncludeDocumentPhoto(event.target.checked);
+                        if (!event.target.checked) {
+                          setDocumentPhoto(null);
+                          setDocumentConfirmed(false);
+                          setPreparingDocument(false);
+                          setError("");
+                        }
+                      }}
+                    />
+                    <span>Agregar foto del documento (opcional)</span>
+                  </label>
+                  <p className="field-hint">
+                    Puedes guardar el control sin esta foto.
+                  </p>
+                  {includeDocumentPhoto && (
+                    <PhotoInput
+                      kind="document"
+                      photo={documentPhoto}
+                      onChange={setDocumentPhoto}
+                      confirmed={documentConfirmed}
+                      onConfirm={setDocumentConfirmed}
+                      onPreparing={setPreparingDocument}
+                      disabled={saving}
+                    />
+                  )}
+                </div>
                 <div className="fields-grid">
                   <div className="field field-wide">
                     <span className="field-label">Funcionario responsable</span>
